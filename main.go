@@ -121,6 +121,9 @@ func startInteractiveMode(listenPort, peerAddress string) {
 
 }
 
+func displayClearScreen() {
+	fmt.Print("\033[H\033[2J")
+}
 func getPort(target string) {
 	conn, err := net.Dial("tcp", target)
 	if err != nil {
