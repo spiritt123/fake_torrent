@@ -76,7 +76,7 @@ func handleConnection(conn net.Conn, serverPort string) {
 		if err != nil {
 			fmt.Printf("Ошибка отправки порта: %v\n", err)
 		}
-	case strings.HasPrefix(message, cmdSendPort):
+	case strings.HasPrefix(message, SendPort):
 		parts := strings.SplitN(message, " ", 2)
 		if len(parts) < 2 {
 			fmt.Println("Неверный формат команды SEND_PORT")
