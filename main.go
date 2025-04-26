@@ -124,6 +124,12 @@ func startInteractiveMode(listenPort, peerAddress string) {
 func displayClearScreen() {
 	fmt.Print("\033[H\033[2J")
 }
+
+func displayHeaderOnScreen(port string) {
+	fmt.Println("=== Файловый клиент ===")
+	fmt.Printf("Ваш порт: %s\n", port)
+	fmt.Println("=======================")
+}
 func getPort(target string) {
 	conn, err := net.Dial("tcp", target)
 	if err != nil {
