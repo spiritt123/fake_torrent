@@ -130,6 +130,15 @@ func displayHeaderOnScreen(port string) {
 	fmt.Printf("Ваш порт: %s\n", port)
 	fmt.Println("=======================")
 }
+func displayMenu() {
+	fmt.Println("\nМеню:")
+	fmt.Println("1. GET_PORT  - Получить порт другого клиента")
+	fmt.Println("2. SEND_PORT - Отправить свой порт другому клиенту")
+	fmt.Println("3. SET_PEER  - Изменить адрес пира по умолчанию")
+	fmt.Println("4. HELP      - Показать это меню")
+	fmt.Println("5. EXIT      - Выйти из программы")
+}
+
 func getPort(target string) {
 	conn, err := net.Dial("tcp", target)
 	if err != nil {
