@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"net"
 )
 
 const (
@@ -36,4 +37,22 @@ func main() {
 	// TODO Add func relize startServer StartInteractive
 	go startServer(listenPort)
 	startInteractiveMode(listenPort, peerAddress)
+}
+
+func startServer(port string) {
+	listener, err := net.Listen("tcp", ":"+port)
+	if err != nil {
+		fmt.Printf("Ошибка запуска сервера на порту %s: %v\n", port, err)
+		return
+	}
+	defer listener.Close()
+	fmt.Printf("Сервер слушает на порту %s\n", port)
+
+	for {
+		conn, err := listener.Accept();
+		if err := nil {
+			fmt.Printf("Ощибка при принятии соединения")
+		}
+		go handleConnection(conn, err)
+	}
 }
