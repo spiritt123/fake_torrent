@@ -94,19 +94,20 @@ func startInteractiveMode(listenPort, peerAddress string) {
 		displayHeaderOnScreen(listenPort)
 		displayMenu()
 		if peerAddress != "" {
-			fmt.Printf("\nТекущий пир %s\n", peerAddress)
+			fmt.Printf("\nТекущий пир: %s\n", peerAddress)
 		}
 
 		fmt.Print("\nВыберите действие (введите номер команды или команду): ")
 		input, _ := reader.ReadString('\n')
 		input = strings.TrimSpace(input)
+
 		switch {
-		case input == "1", string.EqualFold(input, GetPort):
-			handleGetPort(reader, listenPort, PeerAddres)
+		case input == "1", strings.EqualFold(input, GetPort):
+			handleGetPort(reader, listenPort, peerAddress)
 		case input == "2", strings.EqualFold(input, SendPort):
 			handleSendPort(reader, listenPort, peerAddress)
 		case input == "3", strings.EqualFold(input, "SET_PEER"):
-			peerAddress = handleSetPeer(reader)
+			peerAddress = handleSetPeer(reader, peerAddress)
 		case input == "4", strings.EqualFold(input, "HELP"):
 			continue
 		case input == "5", strings.EqualFold(input, "EXIT"), strings.EqualFold(input, "QUIT"):
@@ -116,9 +117,7 @@ func startInteractiveMode(listenPort, peerAddress string) {
 			fmt.Println("\nНеизвестная команда. Введите HELP для списка команд.")
 			promptContinue(reader)
 		}
-
 	}
-
 }
 
 func displayClearScreen() {
@@ -130,6 +129,7 @@ func displayHeaderOnScreen(port string) {
 	fmt.Printf("Ваш порт: %s\n", port)
 	fmt.Println("=======================")
 }
+
 func displayMenu() {
 	fmt.Println("\nМеню:")
 	fmt.Println("1. GET_PORT  - Получить порт другого клиента")
@@ -137,6 +137,64 @@ func displayMenu() {
 	fmt.Println("3. SET_PEER  - Изменить адрес пира по умолчанию")
 	fmt.Println("4. HELP      - Показать это меню")
 	fmt.Println("5. EXIT      - Выйти из программы")
+}
+
+func handleGetPort(reader *bufio.Reader, listenPort, peerAddress string) {
+	fmt.Print("\nВведите адрес клиента (или нажмите Enter для использования пира по умолчанию): ")
+	target, _ := reader.ReadString('\n')
+	target = strings.TrimSpace(target)
+
+	if target == "" {
+		if peerAddress == "" {
+			fmt.Println("Не указан адрес клиента и нет пира по умолчанию")
+			promptContinue(reader)
+			return
+		}
+		target = peerAddress
+	}
+
+	fmt.Printf("\nЗапрашиваю порт у %s...\n", target)
+	getPort(target)
+	promptContinue(reader)
+}
+
+func handleSetPeer(reader *bufio.Reader, currentPeer string) string {
+	fmt.Print("\nВведите новый адрес пира (IP:порт): ")
+	peer, _ := reader.ReadString('\n')
+	peer = strings.TrimSpace(peer)
+
+	if peer != "" {
+		fmt.Printf("Новый пир установлен: %s\n", peer)
+		promptContinue(reader)
+		return peer
+	}
+
+	fmt.Println("Адрес пира не изменен")
+	promptContinue(reader)
+	return currentPeer
+}
+
+func handleSendPort(reader *bufio.Reader, listenPort, peerAddress string) {
+	fmt.Print("\nВведите адрес клиента (или нажмите Enter для использования пира по умолчанию): ")
+	target, _ := reader.ReadString('\n')
+	target = strings.TrimSpace(target)
+
+	if target == "" {
+		if peerAddress == "" {
+			fmt.Println("Не указан адрес клиента и нет пира по умолчанию")
+			promptContinue(reader)
+			return
+		}
+		target = peerAddress
+	}
+
+	fmt.Printf("\nОтправляю свой порт %s клиенту %s...\n", listenPort, target)
+	sendPort(target, listenPort)
+	promptContinue(reader)
+}
+func promptContinue(reader *bufio.Reader) {
+	fmt.Print("\nНажмите Enter чтобы продолжить...")
+	reader.ReadString('\n')
 }
 
 func getPort(target string) {
