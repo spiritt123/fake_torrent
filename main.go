@@ -9,8 +9,8 @@ import (
 )
 
 const (
-	cmdGetPort = "GET_PORT"
-	SendPort   = "SEND_PORT"
+	GetPort  = "GET_PORT"
+	SendPort = "SEND_PORT"
 )
 
 func main() {
@@ -71,7 +71,7 @@ func handleConnection(conn net.Conn, serverPort string) {
 
 	message = strings.TrimSpace(message)
 	switch {
-	case message == cmdGetPort:
+	case message == GetPort:
 		_, err := conn.Write([]byte(serverPort + "\n"))
 		if err != nil {
 			fmt.Printf("Ошибка отправки порта: %v\n", err)
@@ -85,5 +85,48 @@ func handleConnection(conn net.Conn, serverPort string) {
 		fmt.Printf("Получен порт от клиента: %s\n", parts[1])
 	default:
 		fmt.Println("Неизвестная команда:", message)
+	}
+}
+
+func startInteractiveMode(listenPort, peerAddress string) {
+	reader := bufio.NewReader(os.Stdin)
+	fmt.Println("Клиент готов к вводу команд")
+	fmt.Println("Доступные команды:")
+	fmt.Printf("- %s <адрес>: получить порт указанного клиента\n", GetPort)
+	fmt.Printf("- %s <адрес>: отправить свой порт указанному клиенту\n", SendPort)
+	fmt.Printf("Текущий порт: %s\n", listenPort)
+	if peerAddress != "" {
+		fmt.Printf("Пир по умолчанию: %s\n", peerAddress)
+	}
+
+	for {
+		fmt.Print("Введите команду: ")
+		input, _ := reader.ReadString('\n')
+		input = strings.TrimSpace(input)
+		if input == "" {
+			continue
+		}
+
+		parts := strings.SplitN(input, " ", 2)
+		cmd := parts[0]
+		var target string
+		if len(parts) == 2 {
+			target = parts[1]
+		} else if peerAddress != "" {
+			target = peerAddress
+		} else {
+			fmt.Println("Не указан адрес клиента")
+			continue
+		}
+		// add swih TODO add getPort sendPort
+		switch cmd {
+		// GetPort - value; getPort - function
+		case GetPort:
+			getPort(target)
+		case SendPort:
+			sendPort(target, listenPort)
+		default:
+			fmt.Println("Неизвестная команда")
+		}
 	}
 }
