@@ -36,7 +36,6 @@ func main() {
 		}
 	}
 	go startServer(listenPort)
-	// TODO add startInteractive mode like menu
 	startInteractiveMode(listenPort, peerAddress)
 }
 
@@ -55,7 +54,6 @@ func startServer(port string) {
 			fmt.Printf("Ошибка при принятии соединения: %v\n", err)
 			continue
 		}
-		// to do handleConnection
 		go handleConnection(conn, port)
 	}
 }
@@ -118,9 +116,8 @@ func startInteractiveMode(listenPort, peerAddress string) {
 			fmt.Println("Не указан адрес клиента")
 			continue
 		}
-		// add swih TODO add getPort sendPort
+
 		switch cmd {
-		// GetPort - value; getPort - function
 		case GetPort:
 			getPort(target)
 		case SendPort:
