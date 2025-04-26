@@ -130,3 +130,43 @@ func startInteractiveMode(listenPort, peerAddress string) {
 		}
 	}
 }
+
+func getPort(target string) {
+	conn, err := net.Dial("tcp", target)
+	if err != nil {
+		fmt.Printf("Ошибка подключения к %s: %v\n", target, err)
+		return
+	}
+	defer conn.Close()
+
+	_, err = conn.Write([]byte(GetPort + "\n"))
+	if err != nil {
+		fmt.Printf("Ошибка отправки GET_PORT: %v\n", err)
+		return
+	}
+
+	response, err := bufio.NewReader(conn).ReadString('\n')
+	if err != nil {
+		fmt.Printf("Ошибка чтения ответа: %v\n", err)
+		return
+	}
+
+	fmt.Printf("Порт клиента %s: %s\n", target, strings.TrimSpace(response))
+}
+
+func sendPort(target, port string) {
+	conn, err := net.Dial("tcp", target)
+	if err != nil {
+		fmt.Printf("Ошибка подключения к %s: %v\n", target, err)
+		return
+	}
+	defer conn.Close()
+
+	_, err = conn.Write([]byte(SendPort + " " + port + "\n"))
+	if err != nil {
+		fmt.Printf("Ошибка отправки SEND_PORT: %v\n", err)
+		return
+	}
+
+	fmt.Printf("Порт %s успешно отправлен клиенту %s\n", port, target)
+}
