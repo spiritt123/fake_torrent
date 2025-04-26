@@ -35,8 +35,8 @@ func main() {
 			peerAddress = peerArg
 		}
 	}
-	// TODO Add func relize startServer StartInteractive
 	go startServer(listenPort)
+	// TODO add startInteractive mode like menu
 	startInteractiveMode(listenPort, peerAddress)
 }
 
